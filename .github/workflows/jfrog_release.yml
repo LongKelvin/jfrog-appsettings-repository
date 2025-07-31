@@ -1,8 +1,11 @@
 name: Upload Config to JFrog
+
 on:
-  push:
+  workflow_dispatch:           
+  push:                        
     branches:
       - main
+      - develop
 
 jobs:
   upload-config:
@@ -14,6 +17,7 @@ jobs:
       - name: Upload appsettings.json to JFrog
         run: |
           VERSION=$(date +'%Y%m%d%H%M')
+          echo "Uploading appsettings-${VERSION}.json to JFrog..."
           curl -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" \
                -T ./configs/appsettings.json \
                "https://trialzab86e.jfrog.io/artifactory/config-repo-generic-local/appsettings-${VERSION}.json"
