@@ -19,5 +19,5 @@ jobs:
           VERSION=$(date +'%Y%m%d%H%M')
           echo "Uploading appsettings-${VERSION}.json to JFrog..."
           curl -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" \
-               -T ./configs/appsettings.json \
+               -T ./appsettings.json \
                "https://trialzab86e.jfrog.io/artifactory/config-repo-generic-local/appsettings-${VERSION}.json"
