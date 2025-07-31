@@ -1,8 +1,8 @@
 name: Upload Config to JFrog
 
 on:
-  workflow_dispatch:           
-  push:                        
+  workflow_dispatch:           # Manual trigger
+  push:                        # Automatic trigger
     branches:
       - main
       - develop
@@ -14,10 +14,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Validate JFrog token
+        run: |
+          if [ -z "${JFROG_ACCESS_TOKEN}" ]; then
+            echo "ERROR: JFROG_ACCESS_TOKEN is missing!"
+            exit 1
+          fi
+          echo "Token detected. Length: ${#JFROG_ACCESS_TOKEN}"
+        env:
+          JFROG_ACCESS_TOKEN: ${{ secrets.JFROG_ACCESS_TOKEN }}
+
       - name: Upload appsettings.json to JFrog
+        env:
+          JFROG_ACCESS_TOKEN: ${{ secrets.JFROG_ACCESS_TOKEN }}
         run: |
           VERSION=$(date +'%Y%m%d%H%M')
           echo "Uploading appsettings-${VERSION}.json to JFrog..."
-          curl -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" \
-               -T ./appsettings.json \
-               "https://trialzab86e.jfrog.io/artifactory/config-repo-generic-local/appsettings-${VERSION}.json"
+          curl -v \
+            -H "Authorization: Bearer $JFROG_ACCESS_TOKEN" \
+            -T ./appsettings.json \
+            "https://trialzab86e.jfrog.io/artifactory/config-repo-generic-local/appsettings-${VERSION}.json"
